@@ -33,7 +33,8 @@ public class GlobalExceptionHandler {
     // handles everything else
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, String>> handleGeneral(Exception ex) {
+        ex.printStackTrace();
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("error", "Something went wrong"));
+                .body(Map.of("error", ex.getMessage()));
     }
 }
