@@ -5,6 +5,10 @@ import com.example.ecommerce.entity.*;
 import com.example.ecommerce.exception.ResourceNotFoundException;
 import com.example.ecommerce.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,11 +20,42 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
 
-    public List<ProductResponse> getAllProducts() {
-        return productRepository.findAll()
+    public PageResponse<ProductResponse> getAllProducts(
+            int page, int size, String sortBy, String direction
+    ) {
+        Sort sort = direction.equalsIgnoreCase("desc")
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<Product> productPage = productRepository
+                .searchProducts("", pageable);
+        return toPageResponse(productPage);
+    }
+    public PageResponse<ProductResponse> searchProducts(
+            String keyword, int page, int size,
+            String sortBy, String direction
+    ) {
+        Sort sort = direction.equalsIgnoreCase("desc")
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<Product> productPage = productRepository
+                .searchProducts(keyword, pageable);
+        return toPageResponse(productPage);
+    }
+    private PageResponse<ProductResponse> toPageResponse(Page<Product> page) {
+        List<ProductResponse> content = page.getContent()
                 .stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
+        return new PageResponse<>(
+                content,
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalElements(),
+                page.getTotalPages(),
+                page.isLast()
+        );
     }
 
     public ProductResponse getProductById(Long id) {

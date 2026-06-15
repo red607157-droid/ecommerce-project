@@ -1,5 +1,6 @@
 package com.example.ecommerce.controller;
 
+import com.example.ecommerce.dto.PageResponse;
 import com.example.ecommerce.dto.ProductRequest;
 import com.example.ecommerce.dto.ProductResponse;
 import com.example.ecommerce.service.ProductService;
@@ -18,8 +19,28 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping
-    public ResponseEntity<List<ProductResponse>> getAll() {
-        return ResponseEntity.ok(productService.getAllProducts());
+    public ResponseEntity<PageResponse<ProductResponse>> getAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sort,
+            @RequestParam(defaultValue = "asc") String dir
+
+    ) {
+        return ResponseEntity.ok(
+                productService.getAllProducts(page, size, sort, dir));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<PageResponse<ProductResponse>> search(
+            @RequestParam String q,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sort,
+            @RequestParam(defaultValue = "asc") String dir
+    ) {
+        return ResponseEntity.ok(
+                productService.searchProducts(q, page, size, sort, dir)
+        );
     }
 
     @GetMapping("/{id}")
