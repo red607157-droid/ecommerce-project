@@ -37,6 +37,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/categories/**").hasRole("ADMIN")
                         .requestMatchers("/api/cart/**").authenticated()
                         .requestMatchers("/api/orders/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/products/*/reviews").permitAll()
+                        .requestMatchers("/api/reviews").authenticated()
                         .anyRequest().authenticated()
       )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
