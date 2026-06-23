@@ -9,11 +9,13 @@ services:
       DB_USER: postgres
       DB_PASSWORD: postgres
       MONGO_HOST: mongo
+      SPRING_DATA_MONGODB_URI: mongodb://mongo:27017/ecommerce_reviews
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/ecommerce_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
     depends_on:
-      postgres:
-        condition: service_healthy
-      mongo:
-        condition: service_started
+      - postgres
+      - mongo
     restart: on-failure
 
   postgres:
