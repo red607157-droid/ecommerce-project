@@ -15,7 +15,7 @@ public class MongoConfig {
 
     @Bean
     public MongoClient mongoClient() {
-        return MongoClients.create(mongoUri);
+        return MongoClients .create(mongoUri);
     }
 
     @Bean
