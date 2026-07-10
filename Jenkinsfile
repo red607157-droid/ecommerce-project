@@ -2,8 +2,9 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = 'ecommerce-project-backend'
+        IMAGE_NAME = 'end17072007/ecommerce-project-backend'
         IMAGE_TAG  = "build-${BUILD_NUMBER}"
+        RAILWAY_TOKEN = credentials('railway-token')
     }
 
     stages {
@@ -39,6 +40,28 @@ pipeline {
                 echo 'Building Docker image...'
                 bat "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
                 bat "docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${IMAGE_NAME}:latest"
+            }
+        }
+
+        stage('Docker Push') {
+            steps {
+                echo 'Pushing to Docker Hub...'
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-credentials',
+                    usernameVariable: 'DOCKER_USERNAME',
+                    passwordVariable: 'DOCKER_PASSWORD'
+                )]) {
+                    bat "docker login -u %DOCKER_USERNAME% -p %DOCKER_PASSWORD%"
+                    bat "docker push ${IMAGE_NAME}:${IMAGE_TAG}"
+                    bat "docker push ${IMAGE_NAME}:latest"
+                }
+            }
+        }
+
+        stage('Deploy to Railway') {
+            steps {
+                echo 'Triggering deployment to Railway...'
+                bat "npx @railway/cli up --service ecommerce-backend --detach"
             }
         }
 
