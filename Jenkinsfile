@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = 'end17072007/ecommerce-project-backend'
+        IMAGE_NAME = 'end17072007/ecommerce-backend'
         IMAGE_TAG  = "build-${BUILD_NUMBER}"
         RAILWAY_TOKEN = credentials('railway-token')
     }
